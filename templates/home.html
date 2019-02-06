@@ -1,0 +1,11 @@
+<!-- home.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        Welcome {{ user.username }}! Please visit <a href="{% url 'user-profile' user.profile.id %}">your profile</a> to get started.
+    {% else %}
+        Welcome to HosTable. Please <a href="{% url 'user-login' %}">log in</a> or <a href="{% url 'user-register' %}">sign up</a> to get started.
+    {% endif %}
+{% endblock content %}

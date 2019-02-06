@@ -1,0 +1,18 @@
+<!-- /users/profile.html -->
+{% extends "base.html" %}
+{% block content %}
+    <div class="content-section">
+      <div class="media">
+        <div class="media-body">
+          <h2 class="account-heading">{{ object.user.username }}</h2>
+          <p class="text-secondary">{{ object.user.email }}</p>
+          <p class="text-secondary">{{ object.first }} {{ object.last }}</p>
+        </div>
+      </div>
+    </div>
+    {% if user == object.user %}
+    <div>
+        <a href="{% url 'user-update' object.id %}">Edit your profile.</a>
+    </div>
+    {% endif %}
+{% endblock content %}

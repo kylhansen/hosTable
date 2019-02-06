@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="content-section">
+        <div>
+            <h1>Welcome to {{ object.title }}!</h1>
+        </div>
+        <div>
+            <h2>
+                Who?
+            </h2>
+            <p class="muted">
+                Hosted by {{ object.host.username }}
+            </p>
+        </div>
+        <div>
+            <h2>
+                Where?
+            </h2>
+            <p class="muted">
+                {{ object.event_location }}
+            </p>
+        </div>
+        <div>
+            <h2>
+                When?
+            </h2>
+            <p class="muted">
+                {{ object.event_date|date:"F d, Y" }} at {{ object.event_time|date:"P" }}
+            </p>
+        </div>
+        <div>
+            <h2>
+                RSVPs close on {{ object.RSVP_date|date:"F d, Y" }}.
+            </h2>
+        </div>
+    </div>
+{% endblock content %}
