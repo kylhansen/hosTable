@@ -68,7 +68,7 @@ class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = super(EventDetailView, self).get_context_data(**kwargs)
         user = self.request.user
         event = Event.objects.get(id=self.kwargs['pk'])
-        signups = SignUp.objects.get(event=event)
+        signups = Invitation.objects.filter(event=event, attending=True)
         if event.host == user:
             context['hosting'] = True
         else:

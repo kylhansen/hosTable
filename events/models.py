@@ -33,6 +33,7 @@ class Invitation(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE)
     replied = models.BooleanField(default=False)
     attending = models.BooleanField(default=False)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         unique_together = ('event', 'guest')
@@ -40,6 +41,11 @@ class Invitation(models.Model):
     def clean(self):
         if (not self.replied) and (self.attending):
             raise ValidationError({'attending': 'A guest cannot attend without replying.'})
+        if self.food:
+            if not self.attending:
+                raise ValidationError({'attending': 'A guest must attend in order to sign up for a food item.'})
+            if not self.food in self.event.menu.foods.all():
+                raise ValidationError({'food': 'The specified food item does not exist in the menu for this event.'})
 
     def __str__(self):
         return ('Event: ' + self.event.title + ' -- Guest: ' + self.guest.username)
@@ -48,16 +54,3 @@ class Invitation(models.Model):
         return reverse('event-list-guest',
                        kwargs={'RSVP_status': 'attending',
                                'guest_id': self.guest.id})
-
-
-class SignUp(Invitation):
-    food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
-
-    def clean(self):
-        if not self.food in self.event.menu.foods.all():
-            raise ValidationError({'food': 'The specified food item does not exist in the menu for this event.'})
-        if not (self.replied or self.attending):
-            raise ValidationError({'attending': 'A guest must attend in order to sign up for a food item.'})
-
-    def __str__(self):
-        return('food: ' + str(self.food) + '\n' + 'guest: ' + str(self.guest))

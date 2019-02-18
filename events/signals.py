@@ -23,9 +23,3 @@ def create_invitations(sender, instance, action, **kwargs):
         for guest in instance.guests.all():
             if not Invitation.objects.filter(event=instance, guest=guest).exists():
                 Invitation.objects.create(event=instance, guest=guest)
-
-
-@receiver(post_save, sender=Invitation)
-def create_signup(sender, instance, created, **kwargs):
-    if created:
-        event = instance.event
