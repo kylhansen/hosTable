@@ -1,19 +1,34 @@
+<!-- events/view.html -->
+
 {% extends "base.html" %}
+
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
         <div>
             <h1>Welcome to {{ object.title }}!</h1>
         </div>
-        <div>
+        <div class="content-section">
             <h2>
                 Who?
             </h2>
             <p class="muted">
-                Hosted by {{ object.host.username }}
+                Hosted by {{ object.host.first_name }} {{ object.host.last_name }} (<a href="{% url 'user-view' object.host.id %}">{{ object.host.username }}</a>)
             </p>
         </div>
-        <div>
+        <div class="content-section">
+            <h2>
+                What?
+            </h2>
+            <h4 class="muted">
+                Menu: {{ object.menu.name }}
+            </h4>
+            {% for food in object.menu.foods.all %}
+                <p>{{ food }}</p>
+            {% endfor %}
+        </div>
+        <div class="content-section">
             <h2>
                 Where?
             </h2>
@@ -21,7 +36,7 @@
                 {{ object.event_location }}
             </p>
         </div>
-        <div>
+        <div class="content-section">
             <h2>
                 When?
             </h2>
@@ -29,10 +44,23 @@
                 {{ object.event_date|date:"F d, Y" }} at {{ object.event_time|date:"P" }}
             </p>
         </div>
-        <div>
-            <h2>
-                RSVPs close on {{ object.RSVP_date|date:"F d, Y" }}.
-            </h2>
+        <div class="content-section">
+            <h2>RSVP</h2>
+            {% if not hosting and not RSVP_replied %}
+                <h4>
+                    Please RSVP by {{ object.RSVP_date|date:"F d, Y" }}.
+                </h4>
+                <p>
+                    RSVP by {{ event.RSVP_date }}.
+                    <a href="{% url 'event-response' RSVP_id %}">RSVP here!</a>
+                </p>
+            {% elif RSVP_replied %}
+                <p>
+                    You have already replied to this event.
+                </p>
+            {% else %}
+                Check out who has RSVPed <a href="#">here</a>.
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

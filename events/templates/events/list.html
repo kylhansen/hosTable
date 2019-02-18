@@ -1,0 +1,41 @@
+<!-- events/list.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-section">
+    <h2 class='text-muted'>
+        {% if status == 'attending' %}
+            Events you are attending:
+        {% elif status == 'new' %}
+            New invitations:
+        {% elif status == 'all' %}
+            Events you have been invited to:
+        {% elif status == 'hosting' %}
+            Events you are hosting:
+        {% endif %}
+    </h2>
+    {% if not event_list %}
+    <p>
+        Nothing to show right now. Why not <a href="{% url 'event-create' %}">create an event</a> yourself?
+    </p>
+    {% else %}
+    <br>
+        {% for event in event_list %}
+            <div>
+                <a href="{% url 'event-view' event.id %}">{{ event }}</a>
+                    <font size=-1 class='text-muted'>on {{ event.event_date }}</font>
+                <p class='text-muted'>
+                    <font size='-1'>
+                        {% if status != 'attending' and status != 'hosting' %}
+                            RSVP by {{ event.RSVP_date }}.
+                        {% endif %}
+                    </font>
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+
+{% endblock content %}

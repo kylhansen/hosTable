@@ -41,7 +41,7 @@
             <div class="navbar-nav">
               {% if user.is_authenticated %}
                 <a class="nav-item nav-link" href="{% url 'user-logout' %}">Logout</a>
-                <a class="nav-item nav-link" href="{% url 'user-profile' user.profile.id %}">Your Profile</a>
+                <a class="nav-item nav-link" href="{% url 'user-view' user.id %}">Your Profile</a>
               {% else %}
                 <a class="nav-item nav-link" href="{% url 'user-login' %}">Login</a>
                 <a class="nav-item nav-link" href="{% url 'user-register' %}">Sign Up!</a>
@@ -65,13 +65,89 @@
         </div>
         <div class="col-md-4">
           <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>You can put any information here you'd like.
+            <h3>Menu</h3>
+            <p class='text-muted'>Actions
+              <ul class='list-group'>
+
+                <!-- Create Event -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'event-create' %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Create an Event
+                  </li>
+                </a>
+
+                <!-- Create Menu -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'menu-create' %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Create a Menu
+                  </li>
+                </a>
+
+                <!-- Create Food -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'menu-food-create' %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Create a Food Item
+                  </li>
+                </a>
+
+                <!-- Update User -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'user-update' user.id %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Update Your Profile
+                  </li>
+                </a>
+            <p></p>
+            <p class='text-muted'>View
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
+
+                <!-- New Invitations -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'event-list-guest' 'new' user.id %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    New Invitations
+                  </li>
+                </a>
+
+                <!-- Attending -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'event-list-guest' 'attending' user.id %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Attending
+                  </li>
+                </a>
+
+                <!-- Hosting -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'event-list-host' user.id %}">
+                {% else %}
+                <a href="{% url 'user-login' %}">
+                {% endif %}
+                  <li class="list-group-item list-group-item-light">
+                    Hosting
+                  </li>
+                </a>
               </ul>
             </p>
           </div>

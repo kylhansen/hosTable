@@ -1,31 +1,53 @@
-from .models import Event
+from .models import Event, Invitation
 from django import forms
-from django.forms.widgets import DateInput
-from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView
-)
+from django.contrib.auth.models import User
 
 
 class EventCreateForm(forms.ModelForm):
+
+  def __init__(self, *args, **kwargs):
+    request = kwargs.pop('request')
+    super(EventCreateForm, self).__init__(*args, **kwargs)
+    self.fields['guests'] = forms.ModelMultipleChoiceField(User.objects.exclude(id=request.user.id),
+                                                           widget=forms.CheckboxSelectMultiple(),
+                                                           required=False)
+
+  def save(self, commit=True):
+    instance = super(EventCreateForm, self).save(commit=True)
+    instance.guests.add(instance.host)
+    if commit:
+      instance.save()
+    return instance
 
   class Meta:
     model = Event
     fields = ['title',
               'event_location',
+              'menu',
+              'guests',
               'event_date',
               'event_time',
               'RSVP_date',
               ]
-    # event_date = forms.DateField(
-    #    widget=forms.SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"))
-    #)
-    # event_time = forms.TimeField(
-    #    forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
-    #)
-    # RSVP_date = forms.DateField(
-    #    widget=forms.SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"))
-    #)
+
+
+class InvitationResponseForm(forms.ModelForm):
+
+  attending = forms.TypedChoiceField(
+      choices=((False, 'Regretfully Decline'),
+               (True, 'Will Attend')),
+      widget=forms.RadioSelect
+  )
+
+  def save(self, commit=True):
+    instance = super(InvitationResponseForm, self).save(commit=True)
+    instance.replied = True
+    if commit:
+      instance.save()
+    return instance
+
+  class Meta:
+    model = Invitation
+    fields = [
+        'attending'
+    ]

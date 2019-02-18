@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'menus.apps.MenusConfig',
     'events.apps.EventsConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
@@ -136,3 +137,18 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'user-login'
 LOGOUT_REDIRECT_URL = 'home'
+
+
+# Email setup
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'hostable.app@gmail.com'
+EMAIL_HOST_PASSWORD = 'HostableAdmin123$'
+EMAIL_PORT = 587
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Absolute URL Override
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse('user-view', kwargs={'pk': u.pk})
+}

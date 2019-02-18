@@ -1,18 +1,19 @@
-<!-- /users/profile.html -->
+<!-- /users/view.html -->
 {% extends "base.html" %}
 {% block content %}
     <div class="content-section">
       <div class="media">
         <div class="media-body">
+          <h1 class="account-heading"><u>Profile</u>
           <h2 class="account-heading">{{ object.user.username }}</h2>
           <p class="text-secondary">{{ object.user.email }}</p>
-          <p class="text-secondary">{{ object.first }} {{ object.last }}</p>
+          <p class="text-secondary">{{ object.user.first_name }} {{ object.user.last_name }}</p>
         </div>
       </div>
     </div>
-    {% if user == object.user %}
+    {% if user.username == object.user.username %}
     <div>
-        <a href="{% url 'user-update' object.id %}">Edit your profile.</a>
+        <a href="{% url 'user-update' object.id %}">Edit your profile here</a>
     </div>
     {% endif %}
 {% endblock content %}

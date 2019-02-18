@@ -1,6 +1,5 @@
-<!-- /users/update.html -->
-
 {% extends "base.html" %}
+
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -8,13 +7,13 @@
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Update Your Profile</legend>
+            <legend class="border-bottom mb-4">RSVP for {{ event }} below!</legend>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Update</button>
+            <button class="btn btn-outline-info" type="submit">RSVP now</button>
             <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'user-view' user.id %}">Cancel</a>
         </div>
     </form>
 </div>
-{% endblock content %}
+{% endblock %}

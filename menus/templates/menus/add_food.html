@@ -1,22 +1,20 @@
-<!-- events/create.html -->
+<!-- menus/add_food.html -->
 
 {% extends "base.html" %}
 
 {% load crispy_forms_tags %}
-
 {% block content %}
 <div class="content-section">
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Create a new event!</legend>
+            <legend class="border-bottom mb-4">Add a food item!</legend>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Create Event</button>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'user-view' user.id %}">Cancel</a>
+            <button class="btn btn-outline-info" type="submit">Add Food</button>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="#">Cancel</a>
         </div>
     </form>
 </div>
 {% endblock %}
-
