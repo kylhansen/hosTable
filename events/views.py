@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Event, Invitation
-from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm
+from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm, EventUpdateForm
 from menus.models import Food
 from django.views.generic import (
     ListView,
@@ -36,17 +36,19 @@ class EventCreateView(LoginRequiredMixin, CreateView):
 
 class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Event
-    fields = ['title',
-              'menu',
-              'event_location',
-              'event_date',
-              'event_time',
-              'RSVP_date',
-              ]
+    form_class = EventUpdateForm
 
-    def form_valid(self, form):
-        form.instance.host = self.request.user
-        return super().form_valid(form)
+    def get_success_url(self):
+        messages.success(self.request, 'Your event has been updated!')
+        return reverse('event-list-host', args=(self.request.user.id,))
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(EventUpdateView, self).get_form_kwargs()
+        event = self.get_object()
+        #invited_users = event.guests.all().distinct()
+        #uninvited_users = User.objects.exclude(id__in=[guest.id for guest in invited_users] + [self.request.user.id])
+        kwargs.update({'request': self.request})  # , 'uninvited_users': uninvited_users})
+        return kwargs
 
     def test_func(self):
         event = self.get_object()
@@ -69,11 +71,14 @@ class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = super(EventDetailView, self).get_context_data(**kwargs)
         user = self.request.user
         event = Event.objects.get(id=self.kwargs['pk'])
-        signups = Invitation.objects.filter(event=event, attending=True)
         if event.host == user:
             context['hosting'] = True
+            context['invitations_unresponsive'] = Invitation.objects.filter(event=event, replied=False)
+            context['invitations_attending'] = Invitation.objects.filter(event=event, replied=True, attending=True)
+            context['invitations_not_attending'] = Invitation.objects.filter(event=event, replied=True, attending=False)
         else:
             rsvp = Invitation.objects.get(event=event, guest=user)
+            context['food'] = rsvp.food
             context['RSVP_id'] = rsvp.id
             context['RSVP_replied'] = rsvp.replied
         return context
@@ -125,18 +130,6 @@ class EventGuestListView(EventListView):
 class InvitationResponseView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invitation
     form_class = InvitationResponseForm
-    '''
-    def post(self, request, *args, **kwargs):
-        super(InvitationResponseView, self).post(request, *args, **kwargs)
-        form = self.form_class()
-        print('here')
-        if form.is_valid() or not form.is_valid():
-            print('not here')
-            self.object = form.save()
-            return redirect(self.get_success_url())
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-    '''
 
     def get_success_url(self):
         instance = self.get_object()
@@ -185,8 +178,6 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         menu_foods = self.get_object().event.menu.foods.all()
         invitations = Invitation.objects.filter(event=self.get_object().event).filter(food__isnull=False)
         used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
-        print(menu_foods)
-        print(used_foods)
         foods = menu_foods.exclude(id__in=[food.id for food in used_foods])
         kwargs.update({'foods': foods})
         return kwargs

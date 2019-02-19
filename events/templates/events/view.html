@@ -10,24 +10,72 @@
             <h1>Welcome to {{ object.title }}!</h1>
         </div>
         <div class="content-section">
+            {% if not hosting %}
             <h2>
                 Who?
             </h2>
             <p class="muted">
                 Hosted by {{ object.host.first_name }} {{ object.host.last_name }} (<a href="{% url 'user-view' object.host.id %}">{{ object.host.username }}</a>)
             </p>
+            {% else %}
+            <h2>
+                Who?
+            </h2>
+            <h4>
+                Attending:
+            </h4>
+            <p class="muted">
+                {% for invitation in invitations_attending %}
+                    <p>
+                        {{ invitation.guest }} : {% if invitation.food %} bringing {{ invitation.food }} {% else %} bringing nothing {% endif %}
+                    </p>
+                {% endfor %}
+            </p>
+            <h4>
+                Not Attending:
+            </h4>
+            <p class="muted">
+                {% for invitation in invitations_not_attending %}
+                    <p>
+                        {{ invitation.guest }}
+                    </p>
+                {% endfor %}
+            </p>
+            <h4>
+                Not Responded:
+            </h4>
+            <p class="muted">
+                {% for invitation in invitations_unresponsive %}
+                    <p>
+                        {{ invitation.guest }}
+                    </p>
+                {% endfor %}
+            </p>
+            <a href="{% url 'event-update' object.id %}">Edit guest list here!</a>
+            {% endif %}
         </div>
+        {% if not hosting and RSVP_replied %}
         <div class="content-section">
             <h2>
                 What?
             </h2>
-            <h4 class="muted">
-                Menu: {{ object.menu.name }}
-            </h4>
-            {% for food in object.menu.foods.all %}
-                <p>{{ food }}</p>
-            {% endfor %}
+            {% if food %}
+                <h4 class="muted">
+                    You are signed up to bring:
+                </h4>
+                <p>
+                    {{ food }}
+                </p>
+            {% else %}
+                <h4 class="muted">
+                    You are not signed up to bring anything.
+                </h4>
+                <p>
+                    <a href="{% url 'event-response-food' invitation_id %}">Sign up here.</a>
+                </p>
+            {% endif %}
         </div>
+        {% endif %}
         <div class="content-section">
             <h2>
                 Where?
@@ -44,23 +92,22 @@
                 {{ object.event_date|date:"F d, Y" }} at {{ object.event_time|date:"P" }}
             </p>
         </div>
+        {% if not hosting %}
         <div class="content-section">
             <h2>RSVP</h2>
-            {% if not hosting and not RSVP_replied %}
+            {% if not RSVP_replied %}
                 <h4>
                     Please RSVP by {{ object.RSVP_date|date:"F d, Y" }}.
                 </h4>
                 <p>
-                    RSVP by {{ event.RSVP_date }}.
                     <a href="{% url 'event-response' RSVP_id %}">RSVP here!</a>
                 </p>
-            {% elif RSVP_replied %}
+            {% else %}
                 <p>
                     You have already replied to this event.
                 </p>
-            {% else %}
-                Check out who has RSVPed <a href="#">here</a>.
             {% endif %}
         </div>
+        {% endif %}
     </div>
 {% endblock content %}

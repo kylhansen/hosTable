@@ -34,6 +34,29 @@ class EventCreateForm(forms.ModelForm):
                   ]
 
 
+class EventUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        #uninvited_users = kwargs.pop('uninvited_users')
+        super(EventUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['guests'] = forms.ModelMultipleChoiceField(User.objects.exclude(id=request.user.id),
+                                                               widget=forms.CheckboxSelectMultiple(),
+                                                               required=False)
+
+
+    '''    def save(self, commit=True):
+        instance = super(EventUpdateForm, self).save(commit=True)
+        #instance.guests.add(instance.host)
+        if commit:
+            instance.save()
+        return instance'''
+
+    class Meta:
+        model = Event
+        fields = ['guests',
+                  ]
+
+
 class InvitationResponseForm(forms.ModelForm):
 
     attending = forms.BooleanField(required=False)
