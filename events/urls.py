@@ -9,6 +9,7 @@ from .views import (
     EventHostListView,
     EventUpdateView,
     InvitationResponseView,
+    InvitationFoodView,
 )
 
 
@@ -31,4 +32,7 @@ urlpatterns = [
     path('RSVP/<int:pk>',
          InvitationResponseView.as_view(template_name='events/invitations/response.html'),
          name='event-response'),
+    path('RSVP/<int:pk>/food',
+         InvitationFoodView.as_view(template_name='events/invitations/food.html'),
+         name='event-response-food'),
 ]

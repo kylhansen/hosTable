@@ -31,16 +31,14 @@ class Event(models.Model):
 class Invitation(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     guest = models.ForeignKey(User, on_delete=models.CASCADE)
-    replied = models.BooleanField(default=False)
-    attending = models.BooleanField(default=False)
+    replied = models.BooleanField(default=False, blank=True, null=True)
+    attending = models.BooleanField(default=False, blank=True, null=True)
     food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         unique_together = ('event', 'guest')
 
     def clean(self):
-        if (not self.replied) and (self.attending):
-            raise ValidationError({'attending': 'A guest cannot attend without replying.'})
         if self.food:
             if not self.attending:
                 raise ValidationError({'attending': 'A guest must attend in order to sign up for a food item.'})

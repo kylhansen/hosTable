@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Event, Invitation
-from .forms import EventCreateForm, InvitationResponseForm
+from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm
+from menus.models import Food
 from django.views.generic import (
     ListView,
     DetailView,
@@ -124,10 +125,27 @@ class EventGuestListView(EventListView):
 class InvitationResponseView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invitation
     form_class = InvitationResponseForm
+    '''
+    def post(self, request, *args, **kwargs):
+        super(InvitationResponseView, self).post(request, *args, **kwargs)
+        form = self.form_class()
+        print('here')
+        if form.is_valid() or not form.is_valid():
+            print('not here')
+            self.object = form.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+    '''
 
     def get_success_url(self):
-        messages.success(self.request, 'You have successfully RSVPed. Check out your current events below!')
-        return reverse('event-list-guest', args=('attending', self.request.user.id))
+        instance = self.get_object()
+        if not instance.attending:
+            messages.success(self.request, 'You have declined this event. Check out your other events below!')
+            return reverse('event-list-guest', args=('attending', self.request.user.id))
+        else:
+            messages.success(self.request, 'Your response has been saved. Please select a food item to provide.')
+            return reverse('event-response-food', args=(instance.pk,))
 
     def get_context_data(self, **kwargs):
         context = super(InvitationResponseView, self).get_context_data(**kwargs)
@@ -140,3 +158,35 @@ class InvitationResponseView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         if user == invitation.guest:
             return True
         return False
+
+
+class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Invitation
+    form_class = InvitationFoodForm
+
+    def get_success_url(self):
+        messages.success(self.request, 'Your RSVP is complete!')
+        return reverse('event-list-guest', args=('attending', self.request.user.id))
+
+    def get_context_data(self, **kwargs):
+        context = super(InvitationFoodView, self).get_context_data(**kwargs)
+        context['event'] = self.get_object().event
+        return context
+
+    def test_func(self):
+        user = self.request.user
+        invitation = self.get_object()
+        if user == invitation.guest and invitation.attending:
+            return True
+        return False
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(InvitationFoodView, self).get_form_kwargs()
+        menu_foods = self.get_object().event.menu.foods.all()
+        invitations = Invitation.objects.filter(event=self.get_object().event).filter(food__isnull=False)
+        used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
+        print(menu_foods)
+        print(used_foods)
+        foods = menu_foods.exclude(id__in=[food.id for food in used_foods])
+        kwargs.update({'foods': foods})
+        return kwargs
