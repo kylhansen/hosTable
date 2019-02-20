@@ -153,16 +153,11 @@ LOGOUT_REDIRECT_URL = 'home'
 # Email setup
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = ''
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'hostable.app@gmail.com'
+EMAIL_HOST_PASSWORD = 'HostableAdmin123$'
 EMAIL_PORT = 587
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-try:
-    from dev_settings import *
-except ImportError:
-    pass
 
 # Absolute URL Override
 ABSOLUTE_URL_OVERRIDES = {
