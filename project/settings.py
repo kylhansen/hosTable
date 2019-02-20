@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,9 +131,10 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
+STATICFILES_STORAGE = ‘whitenoise.storage.CompressedManifestStaticFilesStorage’
 #STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
+#COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
