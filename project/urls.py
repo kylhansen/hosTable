@@ -27,3 +27,6 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('menus/', include('menus.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
