@@ -27,7 +27,7 @@ SECRET_KEY = '04w34kraea!2v^4#6h7w7lc(9d3y_7th*f+x0yve_5li$1ob-5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['stark-fjord-52906.herokuapp.com']
 
 LOGGING = {
     'version': 1,
