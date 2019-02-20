@@ -58,12 +58,6 @@ MIDDLEWARE = [
     #'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
 ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
@@ -143,6 +137,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
