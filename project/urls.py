@@ -26,6 +26,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('events/', include('events.urls')),
     path('menus/', include('menus.urls')),
-    re_path(r'^static/(?P<path>.*)$', serve,
-            {'document_root': settings.STATIC_ROOT}),
 ]
+
+if not settings.DEBUG:
+    urlpatterns += [re_path(r'^static/(?P<path>.*)$', serve,
+                            {'document_root': settings.STATIC_ROOT})]
