@@ -130,12 +130,8 @@ DEBUG_PROPAGATE_EXCEPTIONS = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-#STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-#COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -148,10 +144,11 @@ LOGOUT_REDIRECT_URL = 'home'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'hostable.app@gmail.com'
-EMAIL_HOST_PASSWORD = 'HostableAdmin123$'
 EMAIL_PORT = 587
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = os.environ.get('HOSTABLE_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('HOSTABLE_PASS')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Absolute URL Override
 ABSOLUTE_URL_OVERRIDES = {
