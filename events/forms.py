@@ -2,6 +2,8 @@ from .models import Event, Invitation
 from menus.models import Menu
 from django import forms
 from django.contrib.auth.models import User
+from datetime import date
+from crispy_forms.helper import FormHelper
 
 
 class EventCreateForm(forms.ModelForm):
@@ -9,15 +11,23 @@ class EventCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
         super(EventCreateForm, self).__init__(*args, **kwargs)
-        self.fields['guests'] = forms.ModelMultipleChoiceField(User.objects.exclude(id=request.user.id),
-                                                               widget=forms.CheckboxSelectMultiple(),
-                                                               required=False)
+        self.fields['guests'] = forms.ModelMultipleChoiceField(
+            User.objects.exclude(id=request.user.id),
+            widget=forms.CheckboxSelectMultiple(),
+            required=False)
         menus = Menu.objects.filter(creator=request.user)
         self.fields['menu'] = forms.ModelChoiceField(queryset=menus)
+        self.fields['event_date'] = forms.DateField(
+            widget=forms.SelectDateWidget,
+            initial=date.today())
+        self.fields['event_time'] = forms.TimeField(input_formats=('%I:%M %p',))
+        self.fields['event_time'].help_text = "Please use the format <em>HH:MM (AM/PM)</em>."
+        self.fields['RSVP_date'] = forms.DateField(
+            widget=forms.SelectDateWidget,
+            initial=date.today())
 
     def save(self, commit=True):
         instance = super(EventCreateForm, self).save(commit=True)
-        instance.guests.add(instance.host)
         if commit:
             instance.save()
         return instance
@@ -39,10 +49,10 @@ class EventUpdateForm(forms.ModelForm):
         request = kwargs.pop('request')
         #uninvited_users = kwargs.pop('uninvited_users')
         super(EventUpdateForm, self).__init__(*args, **kwargs)
-        self.fields['guests'] = forms.ModelMultipleChoiceField(User.objects.exclude(id=request.user.id),
-                                                               widget=forms.CheckboxSelectMultiple(),
-                                                               required=False)
-
+        self.fields['guests'] = forms.ModelMultipleChoiceField(
+            User.objects.exclude(id=request.user.id),
+            widget=forms.CheckboxSelectMultiple(),
+            required=False)
 
     '''    def save(self, commit=True):
         instance = super(EventUpdateForm, self).save(commit=True)

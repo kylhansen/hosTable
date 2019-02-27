@@ -22,3 +22,14 @@ class MenuCreateForm(forms.ModelForm):
             'name',
             'foods',
         ]
+
+
+class FoodCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Food
+        fields = [
+            'name',
+            'recipe_link',
+            'tags',
+        ]
