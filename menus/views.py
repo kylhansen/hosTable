@@ -4,7 +4,7 @@ from django.shortcuts import render, reverse
 from django.contrib.auth.models import User
 from django.template import RequestContext
 from .models import Menu, Food
-from .forms import MenuCreateForm
+from .forms import MenuCreateForm, FoodCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.views.generic import (
@@ -46,11 +46,8 @@ class MenuUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class FoodCreateView(CreateView):
-    model = Food
-    fields = [
-        'name',
-        'recipe_link'
-    ]
+
+    form_class = FoodCreateForm
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
