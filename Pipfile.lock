@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "467d346f19aeb91328ece80c018ec9c0f31a2a7a011cba8a204f71fd2131d2fa"
+            "sha256": "65fe01375f844d9a317f695ddb76399da734097e19b831165cb53e2d22c6b6fa"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,9 @@
         ]
     },
     "default": {
+        "aa73b93": {
+            "path": "./django-taggit-live"
+        },
         "dj-database-url": {
             "hashes": [
                 "sha256:4aeaeb1f573c74835b0686a2b46b85990571159ffc21aa57ecd4d1e1cb334163",

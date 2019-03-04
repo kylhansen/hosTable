@@ -11,7 +11,7 @@ class Food(models.Model):
     name = models.CharField(max_length=100)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe_link = models.URLField(max_length=200, blank=True)
-    food_tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     def __str__(self):
         return self.name
@@ -25,6 +25,7 @@ class Menu(models.Model):
     def __str__(self):
         return self.name
 
+
 class Proportion(models.Model):
-    food_tag = TaggableManager()
-    proportion =
+    tag = TaggableManager()
+    proportion = models.IntegerField()
