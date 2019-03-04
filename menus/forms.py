@@ -12,9 +12,10 @@ class MenuCreateForm(forms.ModelForm):
         super(MenuCreateForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['placeholder'] = 'Menu Name'
         # Fix so that the user can select a food item from a list of foods which they have created
-        self.fields['foods'] = forms.ModelMultipleChoiceField(Food.objects.filter(creator=user),
-                                                              widget=forms.CheckboxSelectMultiple(),
-                                                              required=False)
+        self.fields['foods'] = forms.ModelMultipleChoiceField(
+            Food.objects.filter(creator=user),
+            widget=forms.CheckboxSelectMultiple(),
+            required=False)
 
     class Meta:
         model = Menu
@@ -31,5 +32,5 @@ class FoodCreateForm(forms.ModelForm):
         fields = [
             'name',
             'recipe_link',
-            'tags',
+            'food_tags',
         ]

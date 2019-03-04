@@ -6,12 +6,17 @@ from datetime import date
 from crispy_forms.helper import FormHelper
 
 
+class MyModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "%s %s (%s)" % (obj.first_name, obj.last_name, obj.username)
+
+
 class EventCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
         super(EventCreateForm, self).__init__(*args, **kwargs)
-        self.fields['guests'] = forms.ModelMultipleChoiceField(
+        self.fields['guests'] = MyModelMultipleChoiceField(
             User.objects.exclude(id=request.user.id),
             widget=forms.CheckboxSelectMultiple(),
             required=False)
