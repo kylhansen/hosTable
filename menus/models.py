@@ -29,3 +29,7 @@ class Menu(models.Model):
 class Proportion(models.Model):
     tag = TaggableManager()
     proportion = models.IntegerField()
+
+
+class ProportionMenu(Menu):
+    proportions = models.ManyToManyField(Proportion)
