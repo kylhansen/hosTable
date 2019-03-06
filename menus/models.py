@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.validators import MinValueValidator
 from taggit.managers import TaggableManager
+from users.models import TaggedRestriction
 
 
 class Food(models.Model):
@@ -29,7 +30,4 @@ class Menu(models.Model):
 class Proportion(models.Model):
     tag = TaggableManager()
     proportion = models.IntegerField()
-
-
-class ProportionMenu(Menu):
-    proportions = models.ManyToManyField(Proportion)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, blank=True, null=True)

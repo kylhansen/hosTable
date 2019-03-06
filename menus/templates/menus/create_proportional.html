@@ -1,0 +1,52 @@
+<!-- menus/create.html -->
+
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Create a new menu!</legend>
+            {{ form|crispy }}
+            <table class="table">
+                {{ proportions.management_form }}
+
+                {% for form in proportions.forms %}
+                    {% if forloop.first %}
+                        <thead>
+                        <tr>
+                            {% for field in form.visible_fields %}
+                                <th>{{ field.label|capfirst }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                    {% endif %}
+                    <tr>
+                        {% for field in form.visible_fields %}
+                            <td>
+                                {# Include the hidden fields in the form #}
+                                {% if forloop.first %}
+                                    {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ field.errors.as_ul }}
+                                {{ field }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+             </table>
+
+
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Create Menu</button>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'user-view' user.id %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
