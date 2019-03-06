@@ -4,7 +4,7 @@ from django.shortcuts import render, reverse
 from django.contrib.auth.models import User
 from django.template import RequestContext
 from .models import Menu, Food
-from .forms import MenuCreateForm, FoodCreateForm
+from .forms import MenuCreateForm, FoodCreateForm, ProportionMenuFormSet, ProportionalMenuCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.views.generic import (
@@ -55,6 +55,42 @@ class FoodCreateView(CreateView):
 
     def get_success_url(self):
         messages.success(self.request, 'Your food item has been created!')
+        return reverse('home')
+
+
+class ProporitionMenuCreateView(CreateView):
+
+    form_class = ProportionalMenuCreateForm
+
+    def get_form_kwargs(self):
+        user = self.request.user
+        form_kwargs = super(ProporitionMenuCreateView, self).get_form_kwargs()
+        form_kwargs.update({
+            'user': user,
+        })
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        data = super(ProporitionMenuCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['proportions'] = ProportionMenuFormSet(self.request.POST)
+        else:
+            data['proportions'] = ProportionMenuFormSet()
+        return data
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        context = self.get_context_data()
+        proportions = context['proportions']
+        self.object = form.save()
+
+        if proportions.is_valid():
+            proportions.instance = self.object
+            proportions.save()
+        return super(ProporitionMenuCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        messages.success(self.request, 'Your menu has been created!')
         return reverse('home')
 
     '''

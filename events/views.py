@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Event, Invitation
 from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm, EventUpdateForm
+from users.models import Profile, RestrictionTag
 from menus.models import Food
 from django.views.generic import (
     ListView,
@@ -45,8 +46,8 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_form_kwargs(self, **kwargs):
         kwargs = super(EventUpdateView, self).get_form_kwargs()
         event = self.get_object()
-        #invited_users = event.guests.all().distinct()
-        #uninvited_users = User.objects.exclude(id__in=[guest.id for guest in invited_users] + [self.request.user.id])
+        # invited_users = event.guests.all().distinct()
+        # uninvited_users = User.objects.exclude(id__in=[guest.id for guest in invited_users] + [self.request.user.id])
         kwargs.update({'request': self.request})  # , 'uninvited_users': uninvited_users})
         return kwargs
 
@@ -73,9 +74,19 @@ class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         event = Event.objects.get(id=self.kwargs['pk'])
         if event.host == user:
             context['hosting'] = True
-            context['invitations_unresponsive'] = Invitation.objects.filter(event=event, replied=False)
-            context['invitations_attending'] = Invitation.objects.filter(event=event, replied=True, attending=True)
+            unresponsive = Invitation.objects.filter(event=event, replied=False)
+            attending = Invitation.objects.filter(event=event, replied=True, attending=True)
+            context['invitations_unresponsive'] = unresponsive
+            context['invitations_attending'] = attending
             context['invitations_not_attending'] = Invitation.objects.filter(event=event, replied=True, attending=False)
+            potential_profiles = Profile.objects.filter(Q(user__in=unresponsive.values_list('guest').distinct())
+                                                        | Q(user__in=attending.values_list('guest').distinct()))
+            context['restrictions'] = RestrictionTag.objects.filter(id__in=potential_profiles.values_list('restrictions').distinct())
+            # TODO:
+            #  get the profile of each guest in attendance
+            #  use this profile to get the dietary restrictions of each guest
+            #  and then pass that list on to the context
+            #possible_invitations = Invitation.objects.filter(Q(event=event), Q(replied=False) | Q(replied=True, attending=True))
         else:
             rsvp = Invitation.objects.get(event=event, guest=user)
             context['food'] = rsvp.food

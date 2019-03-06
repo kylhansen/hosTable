@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 if os.environ.get('DEBUG_VALUE'):
     DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
 else:
-    DEBUG = False
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'taggit',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',

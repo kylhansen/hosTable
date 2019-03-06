@@ -27,7 +27,7 @@
             <p class="muted">
                 {% for invitation in invitations_attending %}
                     <p>
-                        {{ invitation.guest }} : {% if invitation.food %} bringing {{ invitation.food }} {% else %} bringing nothing {% endif %}
+                        {{ invitation.guest.first_name }} {{ invitation.guest.last_name }}  : {% if invitation.food %} bringing {{ invitation.food }} {% else %} bringing nothing {% endif %}
                     </p>
                 {% endfor %}
             </p>
@@ -37,7 +37,7 @@
             <p class="muted">
                 {% for invitation in invitations_not_attending %}
                     <p>
-                        {{ invitation.guest }}
+                        {{ invitation.guest.first_name }} {{ invitation.guest.last_name }} ({{ invitation.guest }})
                     </p>
                 {% endfor %}
             </p>
@@ -47,7 +47,17 @@
             <p class="muted">
                 {% for invitation in invitations_unresponsive %}
                     <p>
-                        {{ invitation.guest }}
+                        {{ invitation.guest.first_name }} {{ invitation.guest.last_name }} ({{ invitation.guest }})
+                    </p>
+                {% endfor %}
+            </p>
+            <h4>
+                Dietary Restrictions:
+            </h4>
+            <p class="muted">
+                {% for restriction in restrictions %}
+                    <p>
+                        {{ restriction }}
                     </p>
                 {% endfor %}
             </p>
