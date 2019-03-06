@@ -9,11 +9,18 @@
           <p class="text-secondary">{{ object.user.email }}</p>
           <p class="text-secondary">{{ object.user.first_name }} {{ object.user.last_name }}</p>
         </div>
+        <div class="media-body">
+          <p class="account-heading"><u>Bio</u>
+          <p class="text-secondary">{{ object.bio }}</p>
+        </div>
       </div>
     </div>
     {% if user.username == object.user.username %}
     <div>
-        <a href="{% url 'user-update' object.id %}">Edit your profile here</a>
+        <a href="{% url 'user-update' object.user.id %}">Edit your user information here</a>
+    </div>
+    <div>
+        <a href="{% url 'user-profile-update' object.id %}">Edit your profile here</a>
     </div>
     {% endif %}
 {% endblock content %}

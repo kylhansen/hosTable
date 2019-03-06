@@ -6,7 +6,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .forms import UserRegisterForm, UserUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 from django.contrib.auth.models import User
 from django.views.generic import (
@@ -71,14 +71,19 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
+class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Profile
+    form_class = ProfileUpdateForm
 
     def test_func(self):
-        user = self.get_object()
-        if self.request.user == user:
+        profile = self.get_object()
+        if self.request.user == profile.user:
             return True
         return False
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
+    model = Profile
 
 
 def activate(request, uidb64, token):

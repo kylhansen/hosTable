@@ -51,6 +51,16 @@
                     </p>
                 {% endfor %}
             </p>
+            <h4>
+                Dietary Restrictions:
+            </h4>
+            <p class="muted">
+                {% for restriction in restrictions %}
+                    <p>
+                        {{ restriction }}
+                    </p>
+                {% endfor %}
+            </p>
             <a href="{% url 'event-update' object.id %}">Edit guest list here!</a>
             {% endif %}
         </div>

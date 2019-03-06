@@ -20,7 +20,7 @@ class Food(models.Model):
 class Menu(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True)
-    foods = models.ManyToManyField(Food)
+    foods = models.ManyToManyField(Food, blank=True)
 
     def __str__(self):
         return self.name
