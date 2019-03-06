@@ -12,7 +12,7 @@ whitenoise = "*"
 django-smtp-ssl = "*"
 django = "*"
 django-taggit = "*"
-aa73b93 = {path = "./django-taggit-live"}
+
 
 [requires]
 python_version = "3.6"
