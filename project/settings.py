@@ -134,7 +134,10 @@ USE_TZ = True
 
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
-SECURE_SSL_REDIRECT = False
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+else:
+    SECURE_SSL_REDIRECT = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
