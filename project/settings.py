@@ -25,10 +25,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+'''
 if os.environ.get('DEBUG_VALUE'):
     DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
 else:
     DEBUG = True
+'''
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -130,6 +133,8 @@ USE_L10N = True
 USE_TZ = True
 
 DEBUG_PROPAGATE_EXCEPTIONS = True
+
+SECURE_SSL_REDIRECT = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]

@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django import forms
 from .models import Event, Invitation
 from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm, EventUpdateForm
 from users.models import Profile, RestrictionTag
@@ -32,6 +33,22 @@ class EventCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.host = self.request.user
+        rsvp_date = form.instance.RSVP_date
+        event_date = form.instance.event_date
+        try:
+            if not RSVP_date < event_date:
+                raise forms.ValidationError(
+                    'RSVP date must be prior to event date.'
+                )
+        except:
+            if RSVP_date is None:
+                raise forms.ValidationError(
+                    'RSVP date is not a valid date.'
+                )
+            if event_date is None:
+                raise forms.ValidationError(
+                    'Event date is not a valid date.'
+                )
         return super().form_valid(form)
 
 

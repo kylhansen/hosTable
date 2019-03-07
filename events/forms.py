@@ -1,6 +1,7 @@
 from .models import Event, Invitation
 from menus.models import Menu
 from django import forms
+from django.forms import ValidationError
 from django.contrib.auth.models import User
 from datetime import date
 from crispy_forms.helper import FormHelper
@@ -30,6 +31,17 @@ class EventCreateForm(forms.ModelForm):
         self.fields['RSVP_date'] = forms.DateField(
             widget=forms.SelectDateWidget,
             initial=date.today())
+
+    def clean(self):
+        cleaned_data = super().clean()
+        RSVP_date = cleaned_data.get('RSVP_date')
+        event_date = cleaned_data.get('event_date')
+        try:
+            if not RSVP_date < event_date:
+                self.add_error(None, ValidationError('RSVP date must be prior to event date.'))
+        except:
+            pass
+        return cleaned_data
 
     def save(self, commit=True):
         instance = super(EventCreateForm, self).save(commit=True)

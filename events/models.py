@@ -20,9 +20,9 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
-    def clean(self):
-        if self.RSVP_date > self.event_date:
-            raise ValidationError({'RSVP_date': 'RSVP deadline must not be after the event.'})
+    #def clean(self):
+    #    if self.RSVP_date > self.event_date:
+    #        raise ValidationError({'RSVP_date': 'RSVP deadline must not be after the event.'})
 
     def get_absolute_url(self):
         return reverse('event-view', kwargs={'pk': self.id})
