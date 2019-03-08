@@ -36,12 +36,12 @@ class EventCreateView(LoginRequiredMixin, CreateView):
         rsvp_date = form.instance.RSVP_date
         event_date = form.instance.event_date
         try:
-            if not RSVP_date < event_date:
+            if not rsvp_date < event_date:
                 raise forms.ValidationError(
                     'RSVP date must be prior to event date.'
                 )
         except:
-            if RSVP_date is None:
+            if rsvp_date is None:
                 raise forms.ValidationError(
                     'RSVP date is not a valid date.'
                 )
