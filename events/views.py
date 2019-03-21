@@ -1,5 +1,7 @@
 # events/views.py
 
+import operator
+from functools import reduce
 from django.shortcuts import render, redirect, reverse
 from django.db.models import Q
 from django.contrib import messages
@@ -9,7 +11,7 @@ from django import forms
 from .models import Event, Invitation
 from .forms import EventCreateForm, InvitationResponseForm, InvitationFoodForm, EventUpdateForm
 from users.models import Profile, RestrictionTag
-from menus.models import Food
+from menus.models import Food, Proportion
 from django.views.generic import (
     ListView,
     DetailView,
@@ -203,9 +205,37 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(InvitationFoodView, self).get_form_kwargs()
-        menu_foods = self.get_object().event.menu.foods.all()
         invitations = Invitation.objects.filter(event=self.get_object().event).filter(food__isnull=False)
-        used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
-        foods = menu_foods.exclude(id__in=[food.id for food in used_foods])
-        kwargs.update({'foods': foods})
+        menu = self.get_object().event.menu
+        menu_foods = menu.foods.all()
+        menu_proportions = Proportion.objects.filter(menu=menu)
+        if menu_proportions:
+            tags = get_valid_tags(menu, menu_proportions)
+            foods = Food.objects.filter(creator=self.request.user, tags__in=tags).distinct()
+            kwargs.update({'foods': foods})
+        else:
+            used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
+            foods = menu_foods.exclude(id__in=[food.id for food in used_foods])
+            kwargs.update({'foods': foods})
+
         return kwargs
+
+
+def get_valid_tags(menu, menu_proportions):
+    # Returns a set of tag ids that will be considered "valid"
+    #   a valid tag is one which does not already have too many
+    #   sign ups on that tag already.
+    # How is this determined? TBD
+
+    # Potential ways to determine:
+    # 1) if tag "A" has a value of "x",
+    #       "A" can only get "x" items before it is no longer valid,
+    #       or until all other tags fulfill their limit, then the cycle begins again
+
+    menu_tags = menu_proportions.values_list('tag').all()
+    # Is there a better way to do this?
+    tags = set()
+    for tag_tuple in menu_tags:
+        for tag in tag_tuple:
+            tags.add(tag)
+    return tags
