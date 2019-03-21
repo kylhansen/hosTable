@@ -31,3 +31,6 @@ class Proportion(models.Model):
     tag = TaggableManager()
     proportion = models.IntegerField()
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.menu) + " " + str(self.id)

@@ -42,8 +42,8 @@ class Invitation(models.Model):
         if self.food:
             if not self.attending:
                 raise ValidationError({'attending': 'A guest must attend in order to sign up for a food item.'})
-            if not self.food in self.event.menu.foods.all():
-                raise ValidationError({'food': 'The specified food item does not exist in the menu for this event.'})
+            #if not self.food in self.event.menu.foods.all():
+            #    raise ValidationError({'food': 'The specified food item does not exist in the menu for this event.'})
 
     def __str__(self):
         return ('Event: ' + self.event.title + ' -- Guest: ' + self.guest.username)
