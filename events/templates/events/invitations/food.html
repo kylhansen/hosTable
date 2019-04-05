@@ -4,6 +4,16 @@
 
 {% block content %}
 <div class="content-section">
+    {% if tags %}
+    <div class="content">
+        <h4>The following categories are open.</h4>
+        <ul>
+        {% for tag in tags %}
+            <li>{{ tag }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">

@@ -19,6 +19,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
+from taggit.models import Tag
 
 
 class EventCreateView(LoginRequiredMixin, CreateView):
@@ -194,6 +195,16 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(InvitationFoodView, self).get_context_data(**kwargs)
         context['event'] = self.get_object().event
+        menu = self.get_object().event.menu
+        menu_foods = menu.foods.all()
+        menu_proportions = Proportion.objects.filter(menu=menu)
+        if menu_proportions:
+            # TODO : FIX THE TAG SELECTORS AND MAKE SURE THIS FILTERS ONLY THOSE TAGS IN USE
+            valid_tags = get_valid_tags(menu, menu_proportions)
+            tags = list()
+            for tag in valid_tags:
+                tags.append(Tag.objects.get(id=tag))
+            context['tags'] = tags
         return context
 
     def test_func(self):
@@ -221,11 +232,12 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return kwargs
 
 
+# I'm not actually sure what's going on here.
 def get_valid_tags(menu, menu_proportions):
-    # Returns a set of tag ids that will be considered "valid"
+    # Returns a set of tag ids that will be considered "valid" <- how did I do this?
     #   a valid tag is one which does not already have too many
     #   sign ups on that tag already.
-    # How is this determined? TBD
+    # How is it determined if a tag has too many people signed up for it? TBD
 
     # Potential ways to determine:
     # 1) if tag "A" has a value of "x",
