@@ -15,6 +15,12 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'username', 'email', 'password1', 'password2']
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if email and User.objects.filter(email=email).count() > 0:
+            raise forms.ValidationError(u'This email address is already registered.')
+        return email
+
 
 class UserUpdateForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100)
