@@ -4,25 +4,48 @@
 
 {% block content %}
 <div class="content-section">
-    {% if tags %}
-    <div class="content">
-        <h4>The following categories are open.</h4>
-        <ul>
-        {% for tag in tags %}
-            <li>{{ tag }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    </div>
-    <form method="POST">
+    {% if tagged_event %}
+        {% if tags %}
+        <div class="content">
+            <h4>The following categories are open.</h4>
+            <ul>
+            {% for tag in tags %}
+                <li>{{ tag }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Select a food to bring to {{ event }}.</legend>
+            <legend class="border-bottom mb-4">Select a food to bring to {{ event }}.
+                {% if tagged_event %}
+                (If no food items show up, please create a food item with one of the above tags <a href="{% url 'menu-food-create'%}">here</a>.)
+                {% endif %}
+            </legend>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Choose food</button>
         </div>
     </form>
+        {% else %}
+        <div class="content">
+            <h4>There are currently no categories of food open. Please check back later.</h4>
+        </div>
+        {% endif %}
+    {% else %}
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Select a food to bring to {{ event }}.
+            </legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Choose food</button>
+        </div>
+    </form>
+    {% endif %}
+
 </div>
 {% endblock %}

@@ -1,9 +1,11 @@
 from .models import Event, Invitation
-from menus.models import Menu
+from menus.models import Menu, Proportion, Food
+from menus.forms import MenuCreateForm
 from django import forms
 from django.forms import ValidationError
 from django.contrib.auth.models import User
 from datetime import date
+from taggit.models import Tag
 from crispy_forms.helper import FormHelper
 
 
@@ -64,7 +66,7 @@ class EventCreateForm(forms.ModelForm):
 class EventUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
-        #uninvited_users = kwargs.pop('uninvited_users')
+        # uninvited_users = kwargs.pop('uninvited_users')
         super(EventUpdateForm, self).__init__(*args, **kwargs)
         self.fields['guests'] = forms.ModelMultipleChoiceField(
             User.objects.exclude(id=request.user.id),
@@ -73,7 +75,7 @@ class EventUpdateForm(forms.ModelForm):
 
     '''    def save(self, commit=True):
         instance = super(EventUpdateForm, self).save(commit=True)
-        #instance.guests.add(instance.host)
+        # instance.guests.add(instance.host)
         if commit:
             instance.save()
         return instance'''
@@ -109,8 +111,32 @@ class InvitationFoodForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         foods = kwargs.pop('foods')
+        self.menu = kwargs.pop('menu')
+        try:
+            self.tags = kwargs.pop('tags')
+        except:
+            pass
         super(InvitationFoodForm, self).__init__(*args, **kwargs)
         self.fields['food'] = forms.ModelChoiceField(queryset=foods)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        food = cleaned_data.get('food')
+        tags = self.tags
+        used_tags = set()
+        food_tags = food.tags.values_list('name', flat=True)
+        for tag in food_tags:
+            tag = Tag.objects.get(name=tag)
+            if tag in tags:
+                used_tags.add(tag)
+        menu = self.menu
+        proportions = Proportion.objects.filter(menu=menu).all()
+        for tag in used_tags:
+            item = proportions.filter(tag=tag)
+            proportion = item.first().proportion
+            new_value = max(proportion - 1, 0)
+            item.update(proportion=new_value)
+        return cleaned_data
 
     class Meta:
         model = Invitation

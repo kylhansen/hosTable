@@ -205,6 +205,7 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             for tag in valid_tags:
                 tags.append(Tag.objects.get(id=tag))
             context['tags'] = tags
+            context['tagged_event'] = True
         return context
 
     def test_func(self):
@@ -218,17 +219,21 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         kwargs = super(InvitationFoodView, self).get_form_kwargs()
         invitations = Invitation.objects.filter(event=self.get_object().event).filter(food__isnull=False)
         menu = self.get_object().event.menu
+        kwargs.update({'menu': menu})
         menu_foods = menu.foods.all()
         menu_proportions = Proportion.objects.filter(menu=menu)
         if menu_proportions:
-            tags = get_valid_tags(menu, menu_proportions)
-            foods = Food.objects.filter(creator=self.request.user, tags__in=tags).distinct()
+            valid_tags = get_valid_tags(menu, menu_proportions)
+            tags = list()
+            for tag in valid_tags:
+                tags.append(Tag.objects.get(id=tag))
+            kwargs.update({'tags': tags})
+            foods = Food.objects.filter(creator=self.request.user, tags__in=valid_tags).distinct()
             kwargs.update({'foods': foods})
         else:
             used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
             foods = menu_foods.exclude(id__in=[food.id for food in used_foods])
             kwargs.update({'foods': foods})
-
         return kwargs
 
 
@@ -244,7 +249,8 @@ def get_valid_tags(menu, menu_proportions):
     #       "A" can only get "x" items before it is no longer valid,
     #       or until all other tags fulfill their limit, then the cycle begins again
 
-    menu_tags = menu_proportions.values_list('tag').all()
+    unfilled_tags = menu_proportions.exclude(proportion=0)
+    menu_tags = unfilled_tags.values_list('tag').all()
     # Is there a better way to do this?
     tags = set()
     for tag_tuple in menu_tags:
