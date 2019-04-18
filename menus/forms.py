@@ -26,7 +26,6 @@ class MenuCreateForm(forms.ModelForm):
 
 
 class ProportionalMenuCreateForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(ProportionalMenuCreateForm, self).__init__(*args, **kwargs)
@@ -51,6 +50,7 @@ class FoodCreateForm(forms.ModelForm):
 
 
 class ProportionCreateForm(forms.ModelForm):
+    proportion = forms.IntegerField()
 
     class Meta:
         fields = [
