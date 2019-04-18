@@ -1,0 +1,4 @@
+{% autoescape off %}
+Hi {{ user.username }},
+You have been invited to {{ event }} on hosTable! Click <a href="http://{{ domain }}{% url 'event-view' event.id %}">here</a> to respond!
+{% endautoescape %}
