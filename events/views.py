@@ -20,6 +20,7 @@ from django.views.generic import (
     DeleteView
 )
 from taggit.models import Tag
+import math
 
 
 class EventCreateView(LoginRequiredMixin, CreateView):
@@ -248,8 +249,16 @@ def get_valid_tags(menu, menu_proportions):
     # 1) if tag "A" has a value of "x",
     #       "A" can only get "x" items before it is no longer valid,
     #       or until all other tags fulfill their limit, then the cycle begins again
+    min_ratio = math.inf
+    for menu_proportion in menu_proportions.all():
+        min_ratio = min(min_ratio, menu_proportion.ratio())
 
-    unfilled_tags = menu_proportions.exclude(proportion=0)
+    id_list = list()
+    for menu_proportion in menu_proportions.all():
+        if menu_proportion.ratio() <= min_ratio:
+            id_list.append(menu_proportion.id)
+
+    unfilled_tags = menu_proportions.filter(id__in=id_list)
     menu_tags = unfilled_tags.values_list('tag').all()
     # Is there a better way to do this?
     tags = set()
