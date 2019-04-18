@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.core.validators import MinValueValidator
 from taggit.managers import TaggableManager
 from users.models import TaggedRestriction
+import math
 
 
 class Food(models.Model):
@@ -29,8 +30,12 @@ class Menu(models.Model):
 
 class Proportion(models.Model):
     tag = TaggableManager()
-    proportion = models.FloatField()
+    proportion = models.IntegerField()
+    used = models.FloatField(default=0.0)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, blank=True, null=True)
+
+    def ratio(self):
+        return(math.floor(self.used / self.proportion))
 
     def __str__(self):
         return str(self.menu) + " " + str(self.id)

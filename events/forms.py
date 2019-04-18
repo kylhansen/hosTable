@@ -134,9 +134,9 @@ class InvitationFoodForm(forms.ModelForm):
         portion_used = 1.0 / len(used_tags)
         for tag in used_tags:
             item = proportions.filter(tag=tag)
-            proportion = item.first().proportion
-            new_value = max(proportion - portion_used, 0)
-            item.update(proportion=new_value)
+            old_used = item.first().used
+            new_value = old_used + portion_used
+            item.update(used=new_value)
         return cleaned_data
 
     class Meta:
