@@ -122,21 +122,24 @@ class InvitationFoodForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         food = cleaned_data.get('food')
-        tags = self.tags
-        used_tags = set()
-        food_tags = food.tags.values_list('name', flat=True)
-        for tag in food_tags:
-            tag = Tag.objects.get(name=tag)
-            if tag in tags:
-                used_tags.add(tag)
-        menu = self.menu
-        proportions = Proportion.objects.filter(menu=menu).all()
-        portion_used = 1.0 / len(used_tags)
-        for tag in used_tags:
-            item = proportions.filter(tag=tag)
-            old_used = item.first().used
-            new_value = old_used + portion_used
-            item.update(used=new_value)
+        try:
+            tags = self.tags
+            used_tags = set()
+            food_tags = food.tags.values_list('name', flat=True)
+            for tag in food_tags:
+                tag = Tag.objects.get(name=tag)
+                if tag in tags:
+                    used_tags.add(tag)
+            menu = self.menu
+            proportions = Proportion.objects.filter(menu=menu).all()
+            portion_used = 1.0 / len(used_tags)
+            for tag in used_tags:
+                item = proportions.filter(tag=tag)
+                old_used = item.first().used
+                new_value = old_used + portion_used
+                item.update(used=new_value)
+        except:
+            pass
         return cleaned_data
 
     class Meta:

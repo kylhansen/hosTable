@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Event, Invitation
 from django.core.exceptions import ValidationError
-from django.http import request
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+import os
 
 
 '''
@@ -25,3 +27,16 @@ def create_invitations(sender, instance, action, **kwargs):
         for guest in instance.guests.all():
             if not Invitation.objects.filter(event=instance, guest=guest).exists():
                 Invitation.objects.create(event=instance, guest=guest)
+                mail_subject = 'hosTable: Invitation to ' + str(instance)
+                domain = os.environ.get("HOSTABLE_SITE")
+                message = render_to_string('invitation_email.html', {
+                    'user': guest,
+                    'event': instance,
+                    'domain': domain,
+                })
+                to_email = guest.email
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.content_subtype = "html"
+                email.send()

@@ -7,7 +7,11 @@
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">RSVP for {{ event }} below!</legend>
+            <legend class="border-bottom mb-4">RSVP for {{ event }} below!
+            <div>Date: {{ event.event_date }} </div>
+            <div>Time: {{ event.event_time }}  </div>
+            <div>Location: {{ event.event_location }}</div>
+        </legend>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">

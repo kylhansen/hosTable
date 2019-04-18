@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'menus.apps.MenusConfig',
     'events.apps.EventsConfig',
     'users.apps.UsersConfig',
@@ -147,6 +148,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'user-login'
+
+SITE_ID = 1
 
 
 # Email setup
