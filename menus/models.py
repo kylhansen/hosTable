@@ -29,7 +29,7 @@ class Menu(models.Model):
 
 class Proportion(models.Model):
     tag = TaggableManager()
-    proportion = models.IntegerField()
+    proportion = models.FloatField()
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
