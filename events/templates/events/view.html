@@ -17,6 +17,26 @@
             <p class="muted">
                 Hosted by {{ object.host.first_name }} {{ object.host.last_name }} (<a href="{% url 'user-view' object.host.id %}">{{ object.host.username }}</a>)
             </p>
+            <h4>
+                Attending:
+            </h4>
+            <p class="muted">
+                {% for invitation in invitations_attending %}
+                    <p>
+                        {{ invitation.guest.first_name }} {{ invitation.guest.last_name }}  : {% if invitation.food %} bringing {{ invitation.food }} {% else %} bringing nothing {% endif %}
+                    </p>
+                {% endfor %}
+            </p>
+            <h4>
+                Dietary Restrictions To Account For:
+            </h4>
+            <p class="muted">
+                {% for restriction in restrictions %}
+                    <p>
+                        {{ restriction }}
+                    </p>
+                {% endfor %}
+            </p>
             {% else %}
             <h2>
                 Who?
