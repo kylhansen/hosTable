@@ -109,6 +109,14 @@ class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             #  and then pass that list on to the context
             #possible_invitations = Invitation.objects.filter(Q(event=event), Q(replied=False) | Q(replied=True, attending=True))
         else:
+            unresponsive = Invitation.objects.filter(event=event, replied=False)
+            attending = Invitation.objects.filter(event=event, replied=True, attending=True)
+            context['invitations_unresponsive'] = unresponsive
+            context['invitations_attending'] = attending
+            context['invitations_not_attending'] = Invitation.objects.filter(event=event, replied=True, attending=False)
+            potential_profiles = Profile.objects.filter(Q(user__in=unresponsive.values_list('guest').distinct())
+                                                        | Q(user__in=attending.values_list('guest').distinct()))
+            context['restrictions'] = RestrictionTag.objects.filter(id__in=potential_profiles.values_list('restrictions').distinct())
             rsvp = Invitation.objects.get(event=event, guest=user)
             context['food'] = rsvp.food
             context['RSVP_id'] = rsvp.id
