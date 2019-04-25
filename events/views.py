@@ -3,7 +3,7 @@
 import operator
 from functools import reduce
 from django.shortcuts import render, redirect, reverse
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -21,10 +21,30 @@ from django.views.generic import (
 )
 from taggit.models import Tag
 import math
+import itertools
+
+
+def get_top_guests(host, max_num):
+    past_events = Event.objects.filter(host=host)
+    top_guests = Invitation.objects.exclude(guest=host).filter(event__in=past_events) \
+        .values('guest') \
+        .annotate(num_invites=Count('guest')) \
+        .order_by('-num_invites')
+    result = top_guests[:max_num].values_list('guest', flat=True)
+    return result
 
 
 class EventCreateView(LoginRequiredMixin, CreateView):
     form_class = EventCreateForm
+
+    def get_context_data(self, **kwargs):
+        context = super(EventCreateView, self).get_context_data(**kwargs)
+        host = self.request.user
+        top_guests = get_top_guests(host, 5)
+        # top_guest_names = top_guests.values_list('username')
+        top_guests = User.objects.filter(id__in=top_guests)
+        context['top_guests'] = list(top_guests.values_list('username', flat=True))  # top_guest_names
+        return context
 
     def get_success_url(self):
         messages.success(self.request, 'Your event has been created!')
@@ -107,7 +127,7 @@ class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             #  get the profile of each guest in attendance
             #  use this profile to get the dietary restrictions of each guest
             #  and then pass that list on to the context
-            #possible_invitations = Invitation.objects.filter(Q(event=event), Q(replied=False) | Q(replied=True, attending=True))
+            # possible_invitations = Invitation.objects.filter(Q(event=event), Q(replied=False) | Q(replied=True, attending=True))
         else:
             unresponsive = Invitation.objects.filter(event=event, replied=False)
             attending = Invitation.objects.filter(event=event, replied=True, attending=True)

@@ -6,6 +6,14 @@
 
 {% block content %}
 <div class="content-section">
+    <div class="content">
+        <h3>Consider inviting your top invitees:</h3>
+        <div>
+            {% for guest in top_guests %}
+                {{ guest }}
+            {% endfor %}
+        </div>
+    </div>
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
