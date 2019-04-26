@@ -5,9 +5,19 @@
 {% block content %}
 <div class="content-section">
     {% if tagged_event %}
+        {% if theme %}
+        <h4>Your food items must include each of the following tags</h4>
+        <h5>Note that tags are case-sensitive</h5>
+        <ul>
+            {% for tag in theme %}
+                <li>{{ tag }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         {% if tags %}
         <div class="content">
             <h4>The following categories are open.</h4>
+            <h5>At least one of these tags must be a part of the food item you plan to bring. Note that tags are case-sensitive</h5>
             <ul>
             {% for tag in tags %}
                 <li>{{ tag }}</li>

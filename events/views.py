@@ -233,6 +233,14 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             tags = list()
             for tag in valid_tags:
                 tags.append(Tag.objects.get(id=tag))
+            try:
+                required_tags = get_required_tags(menu)
+                theme = list()
+                for tag in required_tags:
+                    theme.append(Tag.objects.get(id=tag))
+                context['theme'] = theme
+            except:
+                pass
             context['tags'] = tags
             context['tagged_event'] = True
         return context
@@ -258,6 +266,12 @@ class InvitationFoodView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 tags.append(Tag.objects.get(id=tag))
             kwargs.update({'tags': tags})
             foods = Food.objects.filter(creator=self.request.user, tags__in=valid_tags).distinct()
+            try:
+                required_tags = get_required_tags(menu)
+                for tag in required_tags:
+                    foods = foods.filter(tags__in=[tag])
+            except:
+                pass
             kwargs.update({'foods': foods})
         else:
             used_foods = menu_foods.filter(id__in=invitations.values_list('food')).distinct()
@@ -294,3 +308,11 @@ def get_valid_tags(menu, menu_proportions):
         for tag in tag_tuple:
             tags.add(tag)
     return tags
+
+
+def get_required_tags(menu):
+    tags_qs = menu.theme.all()
+    required_tags = set()
+    for tag in tags_qs:
+        required_tags.add(tag.id)
+    return required_tags  # .values_list('theme', flat=True))

@@ -30,11 +30,14 @@ class ProportionalMenuCreateForm(forms.ModelForm):
         user = kwargs.pop('user')
         super(ProportionalMenuCreateForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['placeholder'] = 'Menu Name'
+        self.fields['theme'].label = 'Theme'
+        self.fields['theme'].help_text = 'a comma-sepparated list of tags which <b>every</b> food item must contain.'
 
     class Meta:
         model = Menu
         fields = [
             'name',
+            'theme'
         ]
 
 
